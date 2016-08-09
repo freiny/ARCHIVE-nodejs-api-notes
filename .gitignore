@@ -1,5 +1,7 @@
-# Temp files
+# bash files
+.bash_history
 
+# Temp files
 $RECYCLE.BIN/
 *.*~
 *.log
@@ -28,9 +30,8 @@ tmp
 tramp
 
 # Golang generated files
-main.go
 main
 
-# Rapid testing
-save-commands.json
-main
+# Node.js
+.npm
+node_modules
