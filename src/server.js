@@ -14,7 +14,7 @@ function onRoot(req, res){
 	var a = "hello global server world";
 	const vm = require('vm');
 	const script = new vm.Script(
-		'console.log("Hello VM World");'
+		'console.log("BE Hello VM World");'
 		, {
 	  filename: 'main.js', // filename for stack traces
 	  lineOffset: 1,
@@ -24,9 +24,6 @@ function onRoot(req, res){
 	});
 	var out = script.runInThisContext()
 
-	res.send('Hello World!\n');
-	console.log("ping");
-
-
-
+	res.send('BE Hello World! (http response)\n');
+	console.log("BE ping");
 }
