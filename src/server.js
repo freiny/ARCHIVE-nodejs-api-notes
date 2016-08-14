@@ -1,13 +1,16 @@
 'use strict';
 const PORT = process.env.HTTP_PORT;
 var bodyParser = require('body-parser');
+var cors = require('cors');
 const express = require('express');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', onRoot);
-app.get('/api', onAPI);
+app.get('/api', apiGet);
+app.post('/api', apiPost);
 app.post('/api/code', onCode);
 app.listen(PORT);
 appReady()
@@ -32,14 +35,19 @@ function onRoot(req, res){
 }
 
 // ****************************************************************
-function onAPI(req, res) {
-	console.log('BE ping onAPI()');
+function apiGet(req, res) {
+	console.log('be apiGet()');
 	res.json({'name':'beapi'});
 }
 
 // ****************************************************************
+function apiPost(req, res) {
+	console.log('be apiPost() ...');
+	res.json({'msg':'be apiPost() json response'});
+}
+// ****************************************************************
 function onCode(req, res) {
-	console.log('BE ping onCode()');
+	console.log('be onCode() ...');
 	// ----------------------------------------------------------------
 	// run vm script
 	const util = require('util');
@@ -83,47 +91,7 @@ function onCode(req, res) {
 	}
 	// ----------------------------------------------------------------
 	console.log(out);
-	// var out = util.inspect(sandbox.out);
-	// var log = util.inspect(sandbox.vm.log);
-	// console.log(util.inspect(sandbox));
-	// console.log('SANDBOX:', sandbox);
-	// for (var i=0; i<log.length; i++){
-	// console.log(JSON.parse(JSON.stringify(out)));
-	// console.log(JSON.parse(JSON.stringify(log)));
-	// console.log(typeof JSON.parse(JSON.parse(JSON.stringify(log))));
-	// }
-
-	// const vm = require('vm');
-	// const script = new vm.Script(
-	// 	code
-	// 	, {
-	//   filename: 'main.js',
-	//   lineOffset: 1,
-	//   columnOffset: 1,
-	//   displayErrors: true,
-	//   timeout: 1000,
-	// });
-	// var out = script.runInThisContext();
-	// console.log(out);
-
-	//
-	// const vm = require('vm');
-	// vm.runInNewContext(`
-	//   var util = require('util');
-	//   console.log(util.isBoolean(true));
-	// `, {
-	//   require: require,
-	//   console: console
-	// });
-
-
-
-
-
 	res.json({'msg':out});
-	console.log('BE ping onRoot()');
-
-
 }
 
 // ****************************************************************
