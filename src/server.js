@@ -11,7 +11,7 @@ app.use(cors());
 app.get('/', onRoot);
 app.get('/api', apiGet);
 app.post('/api', apiPost);
-app.post('/api/code', onCode);
+app.post('/api/code', apiCodePost);
 app.listen(PORT);
 appReady()
 
@@ -46,7 +46,7 @@ function apiPost(req, res) {
 	res.json({'msg':'be apiPost() json response'});
 }
 // ****************************************************************
-function onCode(req, res) {
+function apiCodePost(req, res) {
 	console.log('be onCode() ...');
 	// ----------------------------------------------------------------
 	// run vm script
