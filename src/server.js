@@ -1,5 +1,6 @@
 'use strict';
 const PORT = process.env.HTTP_PORT;
+var rlog = require('./lib/rlog');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 const express = require('express');
@@ -72,11 +73,18 @@ function apiCodePost(req, res) {
 		console.log = log;
 	`;
 
-	const script = new vm.Script(preCode + webCode);
+
+	const script = new vm.Script(preCode + webCode, {
+		'filename': 'main.js',
+		'displayErrors': true
+	});
 	const sandbox = {};
 	const context = new vm.createContext(sandbox);
-	script.runInContext(context);
 
+	// rlog.hook();
+
+	script.runInContext(context);
+	// rlog.unhook();
 	// ----------------------------------------------------------------
 	// get output for vm script
 
@@ -98,6 +106,15 @@ function apiCodePost(req, res) {
 function appReady(){
 	if (process.env.APP_ENVIRONMENT === 'dev'){
 		console.log('****************** App Ready');
+		// console.log(process.cwd());
+		// console.log('a');
+		// console.log('b');
+		// rlog.hook();
+		// console.log('c');
+		// console.log(1);
+		// rlog.unhook();
+		// console.log(2);
+		// console.log(3);
 	}
 }
 
