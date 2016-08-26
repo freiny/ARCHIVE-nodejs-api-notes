@@ -103,12 +103,21 @@ function appReady(){
 			console.log(nu.getAddresses());
 
 			var redisConf = nu.getDevices()['redis'];
-			var client = redis.createClient(redisConf['port'], redisConf['address']);
+			// var client = redis.createClient({
+			// 	'host':redisConf['address'],
+			// 	'port':redisConf['port'],
+			// 	'password':'mypassword'
+			// });
+			var client = redis.createClient({
+				'host':redisConf.address,
+				'port':redisConf.port,
+			});
 			client.on("error", function (err) {
     		console.log("Error " + err);
 			});
 
-			client.set("string key", "string val", redis.print);
+			client.del("string key2", redis.print);
+			// client.set("string key2", "string val2", redis.print);
 
 		});
 		// nu.findDevice('redis', 6379);
