@@ -1,8 +1,9 @@
 'use strict';
 const PORT = process.env.HTTP_PORT;
-var rlog = require('./lib/rlog');
 var bodyParser = require('body-parser');
+var formidable = require('formidable');
 var cors = require('cors');
+var redis = require('redis');
 const express = require('express');
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cors());
 app.get('/', onRoot);
 app.get('/api', apiGet);
 app.post('/api', apiPost);
+app.options('/api/code', apiCodeOptions);
 app.post('/api/code', apiCodePost);
 app.listen(PORT);
 appReady()
@@ -47,74 +49,87 @@ function apiPost(req, res) {
 	res.json({'msg':'be apiPost() json response'});
 }
 // ****************************************************************
+function apiCodeOptions(req, res) {
+	console.log('[BE onCodeOptions()]');
+	res.json({'msg':'heyba'});
+}
+// ****************************************************************
 function apiCodePost(req, res) {
-	console.log('be onCode() ...');
-	// ----------------------------------------------------------------
-	// run vm script
-	const util = require('util');
-	const vm = require('vm');
+	console.log('[BE apiCodePost()]');
 
-	var webCode = req.body.msg;
-	var preCode = `
-		var vm = {};
-		vm.log = [];
-		var logger = function(){
-		    var n=0;
-		    return function(){
-		        vm.log[n] = [];
-		        for(i=0; i<arguments.length; i++){
-		            vm.log[n].push(arguments[i]);
-		        }
-		        n++;
-		    }
-		}
-		var log = logger();
-		console = {};
-		console.log = log;
-	`;
+	var onData = function (err, fields, files) {
+		var code = JSON.parse(fields.data);
+		var exec = require('child_process').exec;
+		var onDone = function(error, stdout, stderr) {
+			console.log('onDone...');
+			// console.log('ERR:', error);
+			// console.log('SOUT:', stdout);
+			// console.log('SERR:', stderr);
+			// res.json(JSON.stringify(stdout));
+			res.json(JSON.stringify(stderr + stdout));
+
+		};
+		// exec("ls -la", onDone);
+		// exec("node vm.js " + fields.data, onDone);
+		exec('node vm.js ' + '"' + code + '"' , onDone);
 
 
-	const script = new vm.Script(preCode + webCode, {
-		'filename': 'main.js',
-		'displayErrors': true
-	});
-	const sandbox = {};
-	const context = new vm.createContext(sandbox);
 
-	// rlog.hook();
 
-	script.runInContext(context);
-	// rlog.unhook();
-	// ----------------------------------------------------------------
-	// get output for vm script
 
-	var log = sandbox.vm.log;
-	var out = '';
-	for (var i=0; i<log.length; i++){
-		for (var j=0; j<log[i].length; j++){
-			// console.log();
-			out += util.inspect(log[i][j]) + ' ';
-		}
-		out += '\n'
-	}
-	// ----------------------------------------------------------------
-	console.log(out);
-	res.json({'msg':out});
+
+		// res.json(JSON.stringify({'msg':out}));
+
+
+	};
+
+	var form = new formidable.IncomingForm();
+	form.parse(req, onData);
+
+
 }
 
 // ****************************************************************
 function appReady(){
 	if (process.env.APP_ENVIRONMENT === 'dev'){
+
+		var nu = require('./lib/netutil');
+		// nu.findDevice('balancer', 4000);
+		nu.setDevice('gateway', nu.getNetwork() + 1, 4000);
+		nu.findDevice('redis', 6379, function(){
+			console.log('DEVICES:');
+			console.log(nu.getDevices())
+			console.log('ADDRESSES:');
+			console.log(nu.getAddresses());
+
+			var redisConf = nu.getDevices()['redis'];
+			var client = redis.createClient(redisConf['port'], redisConf['address']);
+			client.on("error", function (err) {
+    		console.log("Error " + err);
+			});
+
+			client.set("string key", "string val", redis.print);
+
+		});
+		// nu.findDevice('redis', 6379);
 		console.log('****************** App Ready');
-		// console.log(process.cwd());
-		// console.log('a');
-		// console.log('b');
-		// rlog.hook();
-		// console.log('c');
-		// console.log(1);
-		// rlog.unhook();
-		// console.log(2);
-		// console.log(3);
+
+		// var nd = require('./lib/netdev');
+		// nd.help();
+		//
+		// var nu = require('./lib/netutil');
+		// nu.help();
+
+		// // var client = redis.createClient(6379, );
+		// var client = redis.createClient();
+		// client.on("error", function (err) {
+    // 	console.log("Error " + err);
+		// });
+
+
+
+	} else {
+
 	}
 }
 

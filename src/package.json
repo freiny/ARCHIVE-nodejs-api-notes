@@ -10,6 +10,8 @@
   "dependencies": {
     "express": "^4.13.3",
 		"body-parser": "^1.15.2",
-		"cors": "^2.7.1"
+		"formidable": "^1.0.17",
+		"cors": "^2.7.1",
+		"redis": "^2.6.2"
   }
 }
