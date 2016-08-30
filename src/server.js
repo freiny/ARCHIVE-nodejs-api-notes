@@ -116,8 +116,15 @@ function appReady(){
     		console.log("Error " + err);
 			});
 
-			client.del("string key2", redis.print);
-			// client.set("string key2", "string val2", redis.print);
+			// client.hset('open', "host", "some value", redis.print);
+			// client.set("k", "v", redis.print);
+			// client.set("k1", "v1", redis.print);
+			// client.set("k2", "v2", redis.print);
+			// client.set("k3", "v3", redis.print);
+			// client.set("k4", "v4", redis.print);
+			// client.set("k5", "v5", redis.print);
+			// client.del("k2", redis.print);
+			// client.del("k4", redis.print);
 
 		});
 		// nu.findDevice('redis', 6379);
