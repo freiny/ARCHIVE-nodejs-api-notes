@@ -1,5 +1,5 @@
 #!/bin/sh
-imagePrefix=introa
+imagePrefix=introb
 
 # Stop Containers
 docker stop "$imagePrefix"_sv_1
